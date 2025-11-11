@@ -1,13 +1,12 @@
 from selenium.webdriver.common.by import By
+from pages.base_page import BasePage
 
-class DuckDuckGoPage:
-    def __init__(self, driver):
-        self.driver = driver
-        self.search_box = (By.NAME, "q")
+class DuckDuckGoPage(BasePage):
+    search_box = (By.NAME, "q")
     
 
     def load(self):
-        self.driver.get("https://duckduckgo.com/")
+        self.open("https://duckduckgo.com/")
 
     def search(self, query):
-        self.driver.find_element(*self.search_box).send_keys(query + "\n")
+        self.type(self.search_box, query + "\n", clear_first=False)
