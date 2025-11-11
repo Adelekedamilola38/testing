@@ -1,0 +1,12 @@
+{
+    "create_post": {
+        "title": "QA Automation Journey",
+        "body": "Creating API test with pytest frameworks.",
+        "userId": 1
+    },
+    "update_post": {
+        "title": "Updated QA Automation Post",
+        "body": "Post updated successfully via Put method.",
+        "userId": 1
+    }
+}
