@@ -7,7 +7,7 @@ from utils.logger import get_logger
 logger = get_logger()
 
 def load_test_data():
-   with open("tests/test_data/posts.json") as f:
+   with open("test_data/posts.json") as f:
        return json.load(f)
 
 # CREATE POST TEST
