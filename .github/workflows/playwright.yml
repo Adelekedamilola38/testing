@@ -2,22 +2,24 @@ name: Playwright Tests
 
 on:
   push:
-    branches: [ main ]
+    paths:
+      - 'tests/ui/playwright/**'
+      - '.github/workflows/playwright.yml'
   pull_request:
-    branches: [ main ]
+    paths:
+      - 'tests/ui/playwright/**'
 
 jobs:
   playwright-tests:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13.7"
 
       - name: Install dependencies
         run: |
@@ -37,4 +39,4 @@ jobs:
 
       - name: Run Playwright tests
         run: |
-          pytest -v --maxfail=1 --disable-warnings --html=report.html --self-contained-html
+          pytest tests/ui/playwright/ -v --maxfail=1 --disable-warnings --html=report.html --self-contained-html
