@@ -1,29 +1,32 @@
 name: Playwright Tests
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Setup Python
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13.7"
-
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright
-
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
-          pip install pytest-playwright
-          playwright install --with-deps
+          python -m pip install --upgrade pip
+          pip install pytest pytest-playwright
+
+      - name: Install Playwright browsers
+        run: |
+          python -m playwright install --with-deps
+          python -m playwright install-deps
 
       - name: Run Playwright tests
-        run: pytest -v --maxfail=1 --disable-warnings
+        run: |
+          pytest -v --maxfail=1 --disable-warnings
