@@ -1,6 +1,13 @@
 name: Run tests with Postgres
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - 'tests/api/**'
+      - '.github/workflows/docker-compose.yml'
+  pull_request:
+    paths:
+      - 'tests/api/**'
 
 jobs:
     tests:
@@ -15,6 +22,8 @@ jobs:
                 options: >-
                     --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=5
                 ports: ['5432:5432']
+                volumes:
+                    - ./db/init.sql:docker-entrypoint-initdb.d/init.sql
         steps:
             - uses: actions/checkout@v4
             - name: Set up Python
