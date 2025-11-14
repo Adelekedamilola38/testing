@@ -1,4 +1,16 @@
 import pytest
+from utils.db_utils import fetch_one, fetch_all, execute_query
+from dotenv import load_dotenv
+load_dotenv()
+
+
+@pytest.fixture(scope="session")
+def db():
+    return {
+        "fetch_one": fetch_one, 
+        "fetch_all": fetch_all,
+        "execute_query": execute_query}
+
 
 # Try to import Selenium (only needed for Selenium UI tests)
 try:

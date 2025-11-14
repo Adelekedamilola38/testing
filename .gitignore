@@ -1,0 +1,19 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore virtual environments
+.env
+
+# Ignore test reports and screenshots
+reports/
+screenshots/
+*.html
+
+# Ignore IDE config files
+.vscode/
+.idea/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db

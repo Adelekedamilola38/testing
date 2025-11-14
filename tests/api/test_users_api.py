@@ -2,12 +2,20 @@ import json
 import pytest
 import requests 
 from utils.logger import get_logger
+from pathlib import Path
 
 
 logger = get_logger()
 
 def load_test_data():
-   with open("test_data/posts.json") as f:
+   test_data_path= (Path(__file__).parent.parent.parent / "test_data" / "posts.json").resolve()
+   print("Looking for test data at:", test_data_path)
+
+
+   if not test_data_path.exists():
+       raise FileNotFoundError(f"Test data file not found at {test_data_path}")
+   
+   with open(test_data_path, "r", encoding="utf-8") as f:
        return json.load(f)
 
 # CREATE POST TEST
@@ -70,4 +78,5 @@ def test_create_post_with_invalid_data(base_url, get_headers):
     response = requests.post(f"{base_url}/posts", json=invalid_payload, headers=get_headers)
     logger.info(f"Response: {response.status_code} - {response.text}")
     assert response.status_code in [400, 201]
+
 
