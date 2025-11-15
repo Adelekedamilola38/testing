@@ -37,7 +37,7 @@ jobs:
           chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 
       - name: Start Docker Compose services
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Wait for Postgres to be ready
         run: |
@@ -57,11 +57,11 @@ jobs:
 
       - name: Show Postgres logs (on failure)
         if: failure()
-        run: docker-compose logs postgres
+        run: docker compose logs postgres
 
       - name: Tear down Docker Compose services
         if: always()
-        run: docker-compose down
+        run: docker compose down
 
       - name: Upload pytest report
         uses: actions/upload-artifact@v4
