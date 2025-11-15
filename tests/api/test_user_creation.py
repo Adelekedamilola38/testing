@@ -2,7 +2,7 @@ import requests
 
 
 def test_user_creation(db):
-    payload = {"name": "John Doe", "email": "john@example"}
+    payload = {"name": "John Doe", "email": "john@example.com"}
     response = requests.post("https://jsonplaceholder.typicode.com/users", json=payload)
 
     assert response.status_code == 201
