@@ -1,4 +1,4 @@
-name: Pytest with ProgresSQL
+name: Pytest with PostgreSQL
 
 on:
   push:
@@ -9,49 +9,62 @@ on:
   pull_request:
     paths:
       - 'tests/api/**'
-    
-jobs: 
-    test: 
-        runs-on: ubuntu-latest
 
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: testdb
 
-        steps:
-            - uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Set up Python 
-              uses: actions/setup-python@v5
-              with:
-                python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-            - name: Start Docker Compose services
-              run: docker-compose up -d
+      - name: Install Docker Compose
+        run: |
+          DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+          mkdir -p $DOCKER_CONFIG/cli-plugins
+          curl -SL https://github.com/docker/compose/releases/download/v2.23.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+          chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 
-            - name: install Dependencies
-              run: |
-                python -m pip install --upgrade pip
-                pip install -r requirements.txt
+      - name: Start Docker Compose services
+        run: docker-compose up -d
 
-              env:
-                DB_HOST: localhost
-                DB_PORT: 5432
-                DB_USER: postgres
-                DB_PASSWORD: postgres
-                DB_NAME: testdb
-            
-            - name: Show Postgres Logs (if failure)
-              if: failure()
-              run: docker-compose logs postgres
+      - name: Wait for Postgres to be ready
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for Postgres..."
+            sleep 2
+          done
 
-            - name: Tear down Docker Compose services
-              if: always()
-              run: docker-compose down
-                
-            - name: Run API Tests
-              run: |
-                pytest tests/api/ -v --html=report.html --self-contained-html
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-            - name: Upload Report
-              uses: actions/upload-artifact@v4
-              with:
-                name: pytest-report
-                path: report.html
+      - name: Run API tests
+        run: |
+          pytest tests/api/ -v --html=report.html --self-contained-html
+
+      - name: Show Postgres logs (on failure)
+        if: failure()
+        run: docker-compose logs postgres
+
+      - name: Tear down Docker Compose services
+        if: always()
+        run: docker-compose down
+
+      - name: Upload pytest report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report
+          path: report.html
